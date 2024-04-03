@@ -6,6 +6,7 @@ classes
 *~
 bin
 .classpath
+.cpcache
 .project
 .lein*
 \#*\#
