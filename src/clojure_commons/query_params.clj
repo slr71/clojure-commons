@@ -1,10 +1,12 @@
 (ns clojure-commons.query-params
-  (:require [clj-http.util :as http-util]
-            [clojure.string :as string]))
+  (:require
+   [clj-http.util :as http-util]
+   [clojure.string :as string]
+   [medley.core :as medley]))
 
 (defn assoc-param
   "Taken from ring.middleware.params. Needed because we need to write
-   a function that uses hidden functions. 
+   a function that uses hidden functions.
 
   Associate a key with a value. If the key already exists in the map,
   create a vector of values."
@@ -35,7 +37,7 @@
 
 (defn assoc-query-params
   "Taken from ring.middleware.params. Needed because we need to write
-   a function that uses hidden functions. 
+   a function that uses hidden functions.
 
    Parse and assoc parameters from the query string with the request."
   [request encoding]
@@ -60,3 +62,14 @@
                     request
                     (assoc-query-params request encoding))]
       (handler request))))
+
+(defn wrap-rename-params
+  "Middleware to rename query parameters. Assumes that the :params and :query-params fields have already been added
+   to the request map."
+  [handler replacement-map]
+  (let [rename-params (fn [m] (medley/map-keys (fn [k] (replacement-map k k)) m))]
+    (fn [request]
+      (-> request
+          (update-in [:params] rename-params)
+          (update-in [:query-params] rename-params)
+          handler))))
