@@ -1,21 +1,18 @@
 (ns clojure-commons.lcase-params
-  (:require [clojure.string :as string]))
-
-(defn- lcase-params
-  [target]
-  (cond
-   (map? target)    (into {} (for [[k v] target]
-                               [(if (string? k) (string/lower-case k) k)
-                                (lcase-params v)]))
-   (vector? target) (mapv lcase-params target)
-   :else            target))
+  (:require
+   [clojure.string :as string]
+   [medley.core :as medley]))
 
 (defn wrap-lcase-params
   "Middleware that converts all parameters to lower case so that they can be treated as effectively
-   case-insensitive. Does not alter the maps under :*-params; these are left with strings."
+   case-insensitive."
   [handler]
-  (fn [req]
-    (handler (update-in req [:params] lcase-params))))
+  (let [lc (fn [k] (-> k name string/lower-case keyword))]
+    (fn [req]
+      (-> req
+          (update-in [:params] (partial medley/map-keys lc))
+          (update-in [:query-params] (partial medley/map-keys lc))
+          handler))))
 
 (defn- lcase-query-param-value
   [value]
