@@ -14,7 +14,7 @@
                  [org.clojure/tools.logging "1.3.1"]
                  [buddy/buddy-sign "3.6.1-359"]
                  [metosin/compojure-api "1.1.14"]
-                 [cheshire "6.1.0"]
+                 [cheshire "6.2.0"]
                  [clj-http "3.13.1"]
                  [clj-time "0.15.2"]
                  [clojurewerkz/propertied "1.3.0"]
@@ -23,10 +23,10 @@
                   :exclusions [commons-logging]]
                  [io.github.clj-kondo/config-slingshot-slingshot "1.0.0"]
                  [me.raynes/fs "1.4.6"]
-                 [dev.weavejester/medley "1.9.0"]
+                 [dev.weavejester/medley "1.10.0"]
                  [slingshot "0.12.2"]
                  [trptcolin/versioneer "0.2.0"]
-                 [org.cyverse/service-logging "2.8.5"]]
+                 [org.cyverse/service-logging "2.8.6"]]
   ;; lein-clj-kondo lives in its own profile because its dependency tree is
   ;; internally inconsistent -- clj-kondo pulls Clojure 1.11.4 while its own sci
   ;; dependency pulls 1.12.0 -- which trips :pedantic? :abort on a conflict that
