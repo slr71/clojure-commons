@@ -10,6 +10,28 @@
             [test2junit "1.4.4"]]
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]]
+  ;; Fail the build on a new dependency conflict rather than printing a
+  ;; warning nobody reads.
+  :pedantic? :abort
+  ;; Everything except the jackson-* group records a version Leiningen already
+  ;; resolves, read off the resolved classpath rather than copied from lein's
+  ;; "Consider using these :managed-dependencies" hint -- that hint names the
+  ;; version that LOST the conflict, so pasting it would be a silent upgrade.
+  ;; These four arbitrate compojure-api 1.1.14's internally inconsistent tree
+  ;; (it is the final release of an archived project) and clj-http vs buddy-core.
+  ;;
+  ;; The jackson-* entries fix a pre-existing split: on main, annotations and
+  ;; databind were at 2.18.3 while core/cbor/smile were at 2.20.0. Jackson needs
+  ;; those to move together -- a mismatch surfaces as NoSuchMethodError at
+  ;; runtime, and :pedantic? cannot see it because each artifact is individually
+  ;; unambiguous. cheshire 6.2.0 brings core/cbor/smile at 2.21.1, so databind
+  ;; and annotations are aligned to 2.21 to match.
+  :managed-dependencies [[com.fasterxml.jackson.core/jackson-annotations "2.21"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.21.1"]
+                         [commons-codec "1.16.1"]
+                         [prismatic/schema "1.1.12"]
+                         [ring/ring-codec "1.1.0"]
+                         [ring/ring-core "1.6.3"]]
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]
                  [buddy/buddy-sign "3.6.1-359"]
