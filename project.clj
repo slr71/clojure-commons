@@ -5,13 +5,12 @@
             :url "https://cyverse.org/license"}
   :eastwood {:exclude-namespaces [:test-paths]
              :linters [:wrong-arity :wrong-ns-form :wrong-pre-post :wrong-tag :misplaced-docstrings]}
-  :plugins [[com.github.clj-kondo/lein-clj-kondo "2025.02.20"]
-            [jonase/eastwood "1.4.3"]
-            [lein-ancient "0.7.0"]
+  :plugins [[jonase/eastwood "1.4.3"]
+            [lein-ancient "1.0.0"]
             [test2junit "1.4.4"]]
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]]
-  :dependencies [[org.clojure/clojure "1.12.4"]
+  :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]
                  [buddy/buddy-sign "3.6.1-359"]
                  [metosin/compojure-api "1.1.14"]
@@ -28,4 +27,11 @@
                  [slingshot "0.12.2"]
                  [trptcolin/versioneer "0.2.0"]
                  [org.cyverse/service-logging "2.8.5"]]
-  :profiles {:test {:resource-paths ["resources" "test-resources"]}})
+  ;; lein-clj-kondo lives in its own profile because its dependency tree is
+  ;; internally inconsistent -- clj-kondo pulls Clojure 1.11.4 while its own sci
+  ;; dependency pulls 1.12.0 -- which trips :pedantic? :abort on a conflict that
+  ;; exists entirely inside a third-party plugin and never reaches the runtime
+  ;; classpath. Lint with `lein with-profile +kondo clj-kondo`.
+  :profiles {:kondo {:plugins [[com.github.clj-kondo/lein-clj-kondo "2026.08.04"]]
+                     :pedantic? :warn}
+             :test {:resource-paths ["resources" "test-resources"]}})
